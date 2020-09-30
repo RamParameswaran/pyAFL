@@ -1,3 +1,7 @@
+![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)
+![Python](https://img.shields.io/pypi/pyversions/django)
+![Build and Test](https://github.com/RamParameswaran/pyAFL/workflows/Build%20and%20Test/badge.svg)
+
 <p align="center">
      <img src="/static/img/AFL-logo.png" width="540" height="360">
 </p>

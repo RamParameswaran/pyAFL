@@ -1,0 +1,10 @@
+# requirements
+beautifulsoup4
+
+# dev requirements
+black
+flake8
+isort
+mypy
+pytest
+pytest-cov
