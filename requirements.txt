@@ -1,5 +1,7 @@
 # requirements
 beautifulsoup4
+requests
+fuzzywuzzy
 
 # dev requirements
 black
