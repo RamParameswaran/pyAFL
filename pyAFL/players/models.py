@@ -1,10 +1,11 @@
 from bs4 import BeautifulSoup
 import re
-import requests
+
 
 from pyAFL import config
 from pyAFL.base.exceptions import LookupError
 from pyAFL.base.models import AFLObject
+from pyAFL.requests import requests
 
 
 class Player(AFLObject):
@@ -62,7 +63,7 @@ class Player(AFLObject):
 
         url_list = soup.findAll(
             "a",
-            href=re.compile(f"^players/{self.name[0]}/{self.name.replace(' ', '_')}"),
+            href=re.compile(f"players/{self.name[0]}/{self.name.replace(' ', '_')}"),
         )
 
         # If no matches found, raise LookupError
@@ -77,4 +78,4 @@ class Player(AFLObject):
                 f"Warning: {len(url_list)} players have been found for name: {self.name}. Returning only the first"
             )
 
-        return config.AFLTABLES_STATS_BASE_URL + url_list[0].attrs.get("href")
+        return url_list[0].attrs.get("href")
