@@ -64,6 +64,7 @@ def get(url: str, force_live: bool = False):
         for link in soup.findAll("a"):
             link.attrs["href"] = urllib.parse.urljoin(url, link.attrs.get("href"))
         html_out = soup.prettify("utf-8")
+        resp._content = html_out
 
         # 3) write file to cache file
         with open(filepath, "w+") as f:
