@@ -1,0 +1,1 @@
+AFLTABLES_STATS_BASE_URL = "https://afltables.com/afl/stats/"
