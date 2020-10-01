@@ -19,13 +19,13 @@ pyAFL is a AFL (Australian Football League) data fetching libary. It scrapes dat
 
 ## API
 
-- Player data
+- Player
   - [Player()](#Player)
   - [Player.get_player_stats()](#Player.get_player_stats)
 
 ### Player()
 
-Instantiates the player by the provided 'name'. The name argument must be in the format "Firstname Lastname" and must be a name listed at https://afltables.com/afl/stats/playersA_idx.html
+Instantiates the Player object. The __init__ method finds the matching player on afltables.com based on the `name` argument string. `name` must be an exact match, in the format "Firstname Lastname" and must be a name listed at https://afltables.com/afl/stats/playersA_idx.html
 
 ### Player.get_player_stats()
 
@@ -60,7 +60,7 @@ This function returns a PlayerStats object with attributes:
         3       2004  St Kilda        12   25.00  ...     3.56    1.84   0.28    1.08
 
     >>> stats.season_results
-        [  St Kilda - 2001   ...8 columns],    St Kilda - 2002  ...8 columns],    St Kilda - 2003  ...8 columns],    St Kilda - 2004  ...8 columns],    St Kilda - 2005  ...8 columns],    St Kilda - 2006  ...8 columns],    St Kilda - 2007  ...8 columns],    St Kilda - 2008  ...8 columns],    St Kilda - 2009  ...8 columns],    St Kilda - 2010  ...8 columns],    St Kilda - 2011  ...8 columns],    St Kilda - 2012  ...8 columns],    St Kilda - 2013  ...8 columns],    St Kilda - 2014  ...8 columns], ...]
+        [  St Kilda - 2001   ...8 columns],    St Kilda - 2002  ...8 columns],    St Kilda - 2003  ...8 columns],    St Kilda - 2004  ...8 columns],    St Kilda - 2005  ...8 columns],    St Kilda - 2006  ...8 columns], ...]
 
 ## Testing
 
