@@ -1,14 +1,15 @@
 from bs4 import BeautifulSoup
+import pandas as pd
 import re
-
 
 from pyAFL import config
 from pyAFL.base.exceptions import LookupError
-from pyAFL.base.models import AFLObject
+
+# from pyAFL.base.models import AFLObject
 from pyAFL.requests import requests
 
 
-class Player(AFLObject):
+class Player(object):
     """
     A class to represent an AFL player.
 
@@ -27,8 +28,6 @@ class Player(AFLObject):
     def __init__(self, name: str, team: str = None):
         """
         Constructs all the necessary attributes for the Player object.
-         - If the player does not exist in the local DB, a search will
-         be performed.
          - If `name` returns two or more players, the (optional) parameter
          "team" is used to select the correct player.
          - If no player can be found for the given "name", "team"
@@ -41,10 +40,6 @@ class Player(AFLObject):
             team : str (string)
                 name of team that the player has played in during their career
         """
-
-        if self._get_object_from_db(name=name, team=team):
-            self = self._get_object_from_db(name=name, team=team)
-            return
 
         self.name = name.title()  # Convert to title case for URL string matching
         self.team = (
@@ -79,3 +74,61 @@ class Player(AFLObject):
             )
 
         return url_list[0].attrs.get("href")
+
+    def get_player_stats(self):
+        """
+        Returns player stats as per the player stats page defined in `self._get_player_url()`
+
+        Returns
+        ----------
+            stats : obj
+                player stats Python object
+
+        """
+
+        resp = requests.get(self.url)
+        self._stat_html = resp.text
+
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        all_dfs = pd.read_html(self._stat_html)
+        season_dfs = pd.read_html(self._stat_html, match=r"[A-Za-z]* - [0-9]{4}")
+
+        season_stats_total = all_dfs[0]  # The first table on the page
+        season_stats_average = all_dfs[1]  # The second table on the page
+
+        ret = PlayerStats(
+            season_stats_total=season_stats_total,
+            season_stats_average=season_stats_average,
+            season_results=season_dfs,
+        )
+
+        return ret
+
+
+class PlayerStats(object):
+    """
+    A class to represent an AFL player.
+
+    Attributes
+    ----------
+    name : str
+        first name of the person
+    stats : object
+        PlayerStats object
+
+    Methods
+    -------
+    ...
+    """
+
+    def __init__(self, **kwargs):
+        """
+        Constructs all the necessary attributes for the PlayerStats object.
+         - kwargs passed are accessed as class attributes
+
+        """
+
+        super().__init__()
+        self.__dict__.update(kwargs)
+        pass
