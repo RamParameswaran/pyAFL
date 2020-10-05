@@ -1,6 +1,7 @@
 #########################################
 # Custom #
 *__htmlcache__/
+*.sqlite
 
 #########################################
 # Editor temporary/working/backup files #
