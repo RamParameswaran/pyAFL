@@ -1,16 +1,17 @@
+import os
 import pytest
+import requests_cache
 from unittest import mock
 
 from pyAFL.requests import requests
 
 
-@pytest.fixture(scope="session")
-def test_html_cache_path(tmpdir_factory):
-    fn = tmpdir_factory.mktemp("__HTMLCACHE__")
-    return fn
-
-
-@pytest.fixture
-def mock_html_cache_dir(monkeypatch, test_html_cache_path):
-    monkeypatch.setattr(requests, "get_html_cache_path", mock.Mock())
-    requests.get_html_cache_path.return_value = str(test_html_cache_path)
+@pytest.fixture(autouse=True)
+def create_test_db_before_test(request):
+    filepath = os.path.join(os.getcwd(), "test_db.sqlite")
+    if os.path.isfile(filepath):
+        os.remove(filepath)
+    requests_cache.install_cache("test_db", backend="sqlite")
+    yield
+    if os.path.isfile(filepath):
+        os.remove(filepath)

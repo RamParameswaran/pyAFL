@@ -2,13 +2,16 @@ from bs4 import BeautifulSoup
 import os
 import re
 import requests as python_requests
+import requests_cache
+import sys
 import urllib
 
 from pyAFL import config
 
 
-def get_html_cache_path():
-    return os.path.join(os.getcwd(), "pyAFL/requests/__htmlcache__/")
+# Initalise cache backend
+cache_name = "test_db" if "pytest" in sys.modules else "pyAFL_html_cache"
+requests_cache.install_cache(cache_name, backend="sqlite")
 
 
 def get(url: str, force_live: bool = False):
@@ -40,17 +43,8 @@ def get(url: str, force_live: bool = False):
     # get full filepath
     base_url = config.AFLTABLES_STATS_BASE_URL
     url_path = url.split(base_url)[-1]
-    html_cache_path = get_html_cache_path()
-    filepath = os.path.join(html_cache_path, url_path)
 
-    if not force_live:
-        if os.path.isfile(filepath):
-            resp = python_requests.models.Response()
-            resp.url = url
-            resp.status_code = 200
-            with open(filepath, "r") as f:
-                resp._content = bytes(f.read(), "utf-8")
-            return resp
+    return python_requests.get(url)
 
     # otherwise make new live request and save html content to `__htmlcache__` directory
     resp = python_requests.get(url)
