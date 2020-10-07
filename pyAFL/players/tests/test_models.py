@@ -11,7 +11,7 @@ class TestPlayerModel:
         with pytest.raises(TypeError):
             Player()
 
-    def test_player_classmethod_get_player_url_success(self, mock_html_cache_dir):
+    def test_player_classmethod_get_player_url_success(self):
         assert (
             Player("Nathan Brown")._get_player_url()
             == "https://afltables.com/afl/stats/players/N/Nathan_Brown0.html"
@@ -25,13 +25,13 @@ class TestPlayerModel:
             == "https://afltables.com/afl/stats/players/T/Tony_Lockett.html"
         )
 
-    def test_player_classmethod_get_player_url_failure(self, mock_html_cache_dir):
+    def test_player_classmethod_get_player_url_failure(self):
         with pytest.raises(LookupError) as e:
             Player("Babe Ruth")._get_player_url()
 
         assert "Found no players with name" in str(e)
 
-    def test_player_classmethod_get_player_stats(self, mock_html_cache_dir):
+    def test_player_classmethod_get_player_stats(self):
         player = Player("Nick Riewoldt")
 
         assert isinstance(player.get_player_stats(), PlayerStats)

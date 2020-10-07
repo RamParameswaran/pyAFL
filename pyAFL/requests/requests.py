@@ -1,22 +1,71 @@
 from bs4 import BeautifulSoup
 import os
 import re
-import requests as python_requests
+import requests
+from requests import Session as OriginalSession
 import requests_cache
+from requests_cache.core import CachedSession, _normalize_parameters
 import sys
 import urllib
 
 from pyAFL import config
 
 
-# Initalise cache backend
-cache_name = "test_db" if "pytest" in sys.modules else "pyAFL_html_cache"
-requests_cache.install_cache(cache_name, backend="sqlite")
+class AFLTablesCachedSession(CachedSession):
+    def request(self, method, url, params=None, data=None, **kwargs):
+        """
+        This function overwrites the `CachedSession.request` method. The only difference
+        is that in this function the HTML content is edited. Relative url hrefs are changed
+        to absolute urls.
+
+        The custom code is denoted by a the comment: "##### CUSTOMISED BLOCK #####".
+
+        Returns
+        ----------
+        - Response object
+
+        """
+        response = super(CachedSession, self).request(
+            method,
+            url,
+            _normalize_parameters(params),
+            _normalize_parameters(data),
+            **kwargs,
+        )
+
+        ##### CUSTOMISED BLOCK #####
+        # Convert hrefs from relative to absolute urls from the https://www.afltables.com domain
+        soup = BeautifulSoup(response.content, "html.parser")
+        for link in soup.findAll("a"):
+            if link.attrs.get("href") and "://" not in link.attrs.get("href"):
+                link.attrs["href"] = urllib.parse.urljoin(url, link.attrs.get("href"))
+        html_out = soup.prettify("utf-8")
+        response._content = html_out
+        ##### END CUSTOMISED BLOCK #####
+
+        if self._is_cache_disabled:
+            return response
+
+        main_key = self.cache.create_key(response.request)
+
+        # If self._return_old_data_on_error is set,
+        # responses won't always have the from_cache attribute.
+        if (
+            hasattr(response, "from_cache")
+            and not response.from_cache
+            and self._filter_fn(response) is not True
+        ):
+            self.cache.delete(main_key)
+            return response
+
+        for r in response.history:
+            self.cache.add_key_mapping(self.cache.create_key(r.request), main_key)
+        return response
 
 
 def get(url: str, force_live: bool = False):
     """
-    This function is a wrapper around `python_requests.get`.
+    This function is a wrapper around `requests.get`.
     It saves the HTML response from previously-run get requests to file
     and fetches the cache from file for future requests.
 
@@ -44,24 +93,15 @@ def get(url: str, force_live: bool = False):
     base_url = config.AFLTABLES_STATS_BASE_URL
     url_path = url.split(base_url)[-1]
 
-    return python_requests.get(url)
+    if force_live:
+        with requests_cache.disabled():
+            return requests.get(url)
+    else:
+        return requests.get(url)
 
-    # otherwise make new live request and save html content to `__htmlcache__` directory
-    resp = python_requests.get(url)
-    if resp.status_code == 200:
-        # 1) create subdirectories (if needed)
-        path, basename = os.path.split(filepath)
-        os.makedirs(path, exist_ok=True)
 
-        # 2) convert hrefs from relative to absolute urls from the https://www.afltables.com domain
-        soup = BeautifulSoup(resp.content, "html.parser")
-        for link in soup.findAll("a"):
-            link.attrs["href"] = urllib.parse.urljoin(url, link.attrs.get("href"))
-        html_out = soup.prettify("utf-8")
-        resp._content = html_out
-
-        # 3) write file to cache file
-        with open(filepath, "w+") as f:
-            f.write(html_out.decode("utf-8"))
-
-    return resp
+# Initalise cache backend
+cache_name = "test_db" if "pytest" in sys.modules else "pyAFL_html_cache"
+requests_cache.install_cache(
+    cache_name, backend="sqlite", session_factory=AFLTablesCachedSession
+)

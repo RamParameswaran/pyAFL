@@ -32,7 +32,21 @@ class TestRequestCaching:
         url = "https://afltables.com/afl/stats/playersA_idx.html"
 
         resp1 = requests.get(url)
+        assert hasattr(resp1, "from_cache")
         assert not resp1.from_cache
 
         resp2 = requests.get(url)
+        assert hasattr(resp2, "from_cache")
         assert resp2.from_cache
+
+    def test_all_requests_with_force_live_are_not_from_cache(self):
+        url = "https://afltables.com/afl/stats/playersA_idx.html"
+
+        resp1 = requests.get(url, force_live=True)
+        assert not hasattr(resp1, "from_cache")
+
+        resp2 = requests.get(url, force_live=True)
+        assert not hasattr(resp2, "from_cache")
+
+        resp3 = requests.get(url, force_live=True)
+        assert not hasattr(resp3, "from_cache")
