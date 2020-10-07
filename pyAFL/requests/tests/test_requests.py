@@ -28,56 +28,25 @@ class TestRequestCaching:
         with pytest.raises(AttributeError):
             resp = requests.get("https://abcdefgh")
 
-    def test_noncached_request_runs_successfully_and_creates_cached_html(
-        self, mock_python_get_request, mock_html_cache_dir
-    ):
-        test_path = os.path.join(
-            requests.get_html_cache_path(), "players/TEST/FAKE_PLAYER.html"
-        )
+    def test_second_request_is_from_cache(self):
+        url = "https://afltables.com/afl/stats/playersA_idx.html"
 
-        # assert cached file does not exist yet
-        assert not os.path.isfile(test_path)
+        resp1 = requests.get(url)
+        assert hasattr(resp1, "from_cache")
+        assert not resp1.from_cache
 
-        # make first request -> this will create the cached file
-        resp = requests.get(
-            "https://afltables.com/afl/stats/players/TEST/FAKE_PLAYER.html",
-            force_live=True,
-        )
-        assert resp.status_code == 200
-        assert "Hello test!" in resp.content.decode("utf-8")
+        resp2 = requests.get(url)
+        assert hasattr(resp2, "from_cache")
+        assert resp2.from_cache
 
-        assert os.path.isfile(test_path)
-        with open(test_path, "r") as f:
-            html_on_file = f.read()
-            assert "Hello test!" in html_on_file
-        os.remove(test_path)
+    def test_all_requests_with_force_live_are_not_from_cache(self):
+        url = "https://afltables.com/afl/stats/playersA_idx.html"
 
-    def test_cached_request_fetches_from_cache_directory(
-        self, mock_html_cache_dir, mock_python_get_request, monkeypatch
-    ):
-        test_path = os.path.join(
-            requests.get_html_cache_path(), "players/TEST/TEST_PLAYER.html"
-        )
-        # assert cached file does not exist yet
-        assert not os.path.isfile(test_path)
+        resp1 = requests.get(url, force_live=True)
+        assert not hasattr(resp1, "from_cache")
 
-        # make first request -> this will create the cached file
-        requests.get(
-            "https://afltables.com/afl/stats/players/TEST/TEST_PLAYER.html",
-            force_live=True,
-        )
+        resp2 = requests.get(url, force_live=True)
+        assert not hasattr(resp2, "from_cache")
 
-        # change the `python_requests.get` mock return_value
-        resp2 = python_requests.models.Response()
-        resp2.status_code = 404
-        resp2._content = b"<html>Some error!</html>"
-        monkeypatch.setattr(python_requests, "get", mock.Mock())
-        python_requests.get.return_value = resp2
-
-        # make second request
-        resp = requests.get(
-            "https://afltables.com/afl/stats/players/TEST/TEST_PLAYER.html"
-        )
-
-        # assert resp has not changed (because we fetched from cache)
-        assert "Hello test!" in resp.content.decode("utf-8")
+        resp3 = requests.get(url, force_live=True)
+        assert not hasattr(resp3, "from_cache")
