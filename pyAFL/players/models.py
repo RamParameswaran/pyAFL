@@ -25,7 +25,7 @@ class Player(object):
     ...
     """
 
-    def __init__(self, name: str, team: str = None):
+    def __init__(self, name: str, url: str = None, team: str = None):
         """
         Constructs all the necessary attributes for the Player object.
          - If `name` returns two or more players, the (optional) parameter
@@ -42,15 +42,22 @@ class Player(object):
         """
 
         self.name = name.title()  # Convert to title case for URL string matching
-        self.team = (
-            team.title() if team else None
-        )  # Convert to title case for URL string matching
-        self.url = self._get_player_url()
+        self.name = self.name.replace("\n", "").strip()
+        if url:
+            self.url = url
+        else:
+            self.url = self._get_player_url()
+
+    def __repr__(self):
+        return f"<Player: {self.name}>"
+
+    def __str__(self):
+        return self.name
 
     def _get_player_url(self):
         last_initial = self.name.split(" ")[1][0]
         player_list_url = (
-            config.AFLTABLES_STATS_BASE_URL + f"players{last_initial}_idx.html"
+            config.AFLTABLES_STATS_BASE_URL + f"stats/players{last_initial}_idx.html"
         )
 
         resp = requests.get(player_list_url)
@@ -89,7 +96,7 @@ class Player(object):
         resp = requests.get(self.url)
         self._stat_html = resp.text
 
-        soup = BeautifulSoup(resp.text, "html.parser")
+        soup = BeautifulSoup(self._stat_html, "html.parser")
 
         all_dfs = pd.read_html(self._stat_html)
         season_dfs = pd.read_html(self._stat_html, match=r"[A-Za-z]* - [0-9]{4}")
