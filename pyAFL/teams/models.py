@@ -41,6 +41,12 @@ class Team(object):
         self.all_time_players_url = f"https://afltables.com/afl/stats/teams/{url_identifier}.html"  # URL for all-time-players stats
         self.all_time_games_url = f"https://afltables.com/afl/teams/{url_identifier}/allgames.html"  # URL to all-time-games stats
 
+    def __repr__(self):
+        return f"<Team: {self.name}>"
+
+    def __str__(self):
+        return self.name
+
     @property
     def players(self):
         """
