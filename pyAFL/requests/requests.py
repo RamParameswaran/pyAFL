@@ -95,6 +95,7 @@ def get(url: str, force_live: bool = False):
 
     if force_live:
         with requests_cache.disabled():
+            # NOTE - when force_live == True - the anchor-tag absolute URL fix is not applied!
             return requests.get(url)
     else:
         return requests.get(url)
