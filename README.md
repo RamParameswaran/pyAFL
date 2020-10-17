@@ -81,7 +81,7 @@ Instantiates a Team object. pyAFL automatically instantiates Team objects for al
 
 ### Team.players
 
-Returns a list of all historical player for this team. The list contains pyAFL [Player objects](#Player)
+Returns a list of all historical players for this team. The return is a list of pyAFL [Player](#Player) objects. These Player objects can be queried to get player stats using the Player classmethods noted above.
 
     >>> from pyAFL.teams import ADE
     >>> # Let's get a list of all players who have every played for Adelaide (i.e. all players from https://afltables.com/afl/stats/teams/adelaide.html)
