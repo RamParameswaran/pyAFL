@@ -13,9 +13,11 @@ class Team(object):
     Attributes
     ----------
     name : str
-        team full name
-    players : object
-        list of all time players who played for the team (pyAFL player objects)
+        team full name.
+    players : list
+        list of all time players who played for the team (pyAFL player objects).
+    games : Pandas DataFrame
+        dataframe containing results of all games played by the team.
 
     """
 
@@ -111,3 +113,37 @@ class Team(object):
 
         return season_stats
 
+    @property
+    def games(self):
+        return self._get_games()
+
+    def _get_games(self):
+        """
+        Returns a Pandas dataframe listing every match contained in `self.all_time_games_url`
+
+        Returns
+        ----------
+            games : Pandas dataframe
+                dataframe listing all games played by the team. Contains results and match metadata.
+
+        """
+        resp = requests.get(self.all_time_games_url)
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        seasons = soup.findAll("table")
+
+        dfs = []
+        for season_html in seasons:
+            df = pd.read_html(str(season_html))[0]
+            df.columns = df.columns.droplevel(1)
+            dfs.append(df)
+
+        games = pd.concat(dfs)
+        games = games.iloc[0:-2, :]
+        games.index = pd.to_datetime(games.Date)
+
+        games = games.rename(
+            columns={"A": "Against", "F": "For", "R": "Result", "M": "Margin"}
+        )
+
+        return games
