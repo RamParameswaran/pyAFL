@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
+import pandas as pd
 
+from pyAFL.base.exceptions import LookupError
 from pyAFL.players.models import Player
 from pyAFL.requests import requests
 
@@ -68,4 +70,44 @@ class Team(object):
         ]
 
         return players
+
+    def season_stats(self, year: int):
+        """
+        Returns a Pandas dataframe detailing the season stats for the specified year.
+        E.g. for Adelaide the table found at https://afltables.com/afl/stats/2020.html#1
+
+        Parameters
+        ----------
+            year : int (required)
+                year as a four-digit integer (e.g. 2019)
+
+        Returns
+        ----------
+            season_stats : Pandas dataframe
+                dataframe summarising individual player (and team total) stats for the specified year.
+
+        """
+        season_player_stats_url = f"https://afltables.com/afl/stats/{year}.html"
+        resp = requests.get(season_player_stats_url)
+
+        if resp.status_code == 404:
+            raise Exception(f"Could not find season stats for year: {year}")
+
+        soup = BeautifulSoup(resp.text, "html.parser")
+        team_tables = soup.findAll("table")
+
+        for table in team_tables:
+            if table.find("th"):
+                if self.name in table.find("th").text:
+                    df = pd.read_html(str(table))
+
+        if df is None:
+            raise LookupError(
+                f"Could not find season stats table for team {self.name} in year {year} at URL https://afltables.com/afl/stats/{year}.html"
+            )
+
+        season_stats = df[0]
+        season_stats.columns = season_stats.columns.droplevel()
+
+        return season_stats
 
