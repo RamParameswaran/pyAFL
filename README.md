@@ -125,8 +125,8 @@ Returns a Pandas DataFrame with all historical game results for this team. The D
 Retrieves the season stats for the specified year, including the individual player stats for all Players who played a game during the year. This function returns a Pandas DataFrame.
 
     >>> from pyAFL.teams import ADE
-    >>> # Who player for Adelaide in 2009, and how did they perform? (See https://afltables.com/afl/stats/2009.html)
-    >>> ADE.season_stats(2009)
+    >>> # Who player for Adelaide in 2019, and how did they perform? (See https://afltables.com/afl/stats/2019.html)
+    >>> ADE.season_stats(2019)
                           #              Player               GM  ...     GA    %P  SU
         0                10        Boak, Travis               21  ...   14.0  79.8 NaN
         1                11       Rockliff, Tom               18  ...    8.0  77.3 NaN
