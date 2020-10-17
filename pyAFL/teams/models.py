@@ -142,11 +142,12 @@ class Team(object):
         for season_html in seasons:
             df = pd.read_html(str(season_html))[0]
             df.columns = df.columns.droplevel(1)
+            df = df.iloc[0:-2, :]
             dfs.append(df)
 
         games = pd.concat(dfs)
-        games = games.iloc[0:-2, :]
         games.index = pd.to_datetime(games.Date)
+        games = games.sort_index()
 
         games = games.rename(
             columns={"A": "Against", "F": "For", "R": "Result", "M": "Margin"}

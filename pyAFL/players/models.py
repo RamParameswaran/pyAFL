@@ -42,6 +42,7 @@ class Player(object):
         """
 
         self.name = name.title()  # Convert to title case for URL string matching
+        self.name = self.name.replace("\n", "").strip()
         if url:
             self.url = url
         else:
