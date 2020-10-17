@@ -47,6 +47,12 @@ class Player(object):
         else:
             self.url = self._get_player_url()
 
+    def __repr__(self):
+        return f"<Player: {self.name}>"
+
+    def __str__(self):
+        return self.name
+
     def _get_player_url(self):
         last_initial = self.name.split(" ")[1][0]
         player_list_url = (
