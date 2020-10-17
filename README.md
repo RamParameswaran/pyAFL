@@ -22,6 +22,10 @@ pyAFL is a AFL (Australian Football League) data fetching libary. It scrapes dat
 - Player
   - [Player()](#Player)
   - [Player.get_player_stats()](#Player.get_player_stats)
+- Team
+  - [Team()](#Team)
+  - [Team.players](#Team.players)
+  - [Team.games](#Team.games)
 
 ### Player()
 
@@ -62,6 +66,60 @@ This function returns a PlayerStats object with attributes:
     >>> stats.season_results
         [  St Kilda - 2001   ...8 columns],    St Kilda - 2002  ...8 columns],    St Kilda - 2003  ...8 columns],    St Kilda - 2004  ...8 columns],    St Kilda - 2005  ...8 columns],    St Kilda - 2006  ...8 columns], ...]
 
+### Team()
+
+Instantiates a Team object. pyAFL automatically instantiates Team objects for all current and former AFL teams. They can be imported by their team abbreviation:
+
+    >>> from pyAFL.teams import (ADE, BRI, BRB, CAR, COL, ESS, FIZ, FRE, GEE, GC, GWS, HAW, MEL, NOR, POR, RIC, STK, SYD, UNI, WCE, WBD)
+    >>> # or
+    >>> from pyAFL.teams import ALL_TEAMS, CURRENT_TEAMS
+    
+    >>> ADE
+        <Team: Adelaide>
+    >>> CURRENT_TEAMS
+        [<Team: Adelaide>, <Team: Brisbane Lions>, <Team: Carlton>, <Team: Collingwood>, <Team: Essendon>, <Team: Fremantle>, <Team: Geelong>, <Team: Gold Coast>, <Team: Greater Western Sydney>, <Team: Hawthorn>, <Team: Melbourne>, <Team: North Melbourne>, <Team: Port Adelaide>, <Team: Richmond>, ...]
+
+### Team.players
+
+Returns a list of all historical player for this team. The list contains pyAFL [Player objects](#Player)
+
+    >>> from pyAFL.teams import ADE
+    >>> # Let's get a list of all players who have every played for Adelaide (i.e. all players from https://afltables.com/afl/stats/teams/adelaide.html)
+    >>> ADE.players
+        [<Player: Mcleod, Andrew>, <Player: Edwards, Tyson>, <Player: Ricciuto, Mark>, <Player: Hart, Ben>, <Player: Smart, Nigel>, <Player: Goodwin, Simon>, <Player: Bickley, Mark>, <Player: Thompson, Scott>, ...]
+
+### Team.games
+
+Returns a Pandas DataFrame with all historical game results for this team. The DataFrame has a datetime index.
+
+    >>> from pyAFL.teams import ADE
+    >>> # Let's get all historical game data (i.e. all the data from https://afltables.com/afl/teams/adelaide/allgames.html)
+    >>> ADE.games
+                             Rnd  T  ...    Crowd                      Date
+        Date                         ...                                   
+        1991-03-22 19:40:00   R1  H  ...  44902.0   Fri 22-Mar-1991 7:40 PM
+        1991-03-31 14:10:00   R2  H  ...  43850.0   Sun 31-Mar-1991 2:10 PM
+        ...                  ... ..  ...      ...                       ...
+        2020-09-13 13:05:00  R17  A  ...   2735.0   Sun 13-Sep-2020 1:05 PM
+        2020-09-19 16:40:00  R18  H  ...  17710.0   Sat 19-Sep-2020 4:40 PM
+        [688 rows x 13 columns]
+    
+    >>> # The DataFrame can be sliced by Date in human-readable format!
+    >>> ADE.games.loc['2016-01-01':'2019-12-31']
+                             Rnd  T  ...    Crowd                     Date
+        Date                         ...                                  
+        2016-03-26 19:25:00   R1  A  ...  25485.0  Sat 26-Mar-2016 7:25 PM
+        2016-04-02 13:15:00   R2  H  ...  50555.0  Sat 02-Apr-2016 1:15 PM
+        ...                  ... ..  ...      ...                      ...
+        2019-08-17 16:05:00  R22  H  ...  48175.0  Sat 17-Aug-2019 4:05 PM
+        2019-08-25 13:10:00  R23  A  ...   9560.0  Sun 25-Aug-2019 1:10 PM
+        [93 rows x 13 columns]
+    
+    >>> # Let's see what columns are contained in the DataFrame
+    >>> ADE.games.columns
+        Index(['Rnd', 'T', 'Opponent', 'Scoring', 'For', 'Scoring', 'Against', 'Result', 'Margin', 'W-D-L', 'Venue', 'Crowd', 'Date'], dtype='object')
+        
+        
 ## Testing
 
 The unit tests can be run by running pytest from the project directory, like so;
