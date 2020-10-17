@@ -89,10 +89,6 @@ def get(url: str, force_live: bool = False):
             f"This function only takes URLs from `{config.AFLTABLES_STATS_BASE_URL}`"
         )
 
-    # get full filepath
-    base_url = config.AFLTABLES_STATS_BASE_URL
-    url_path = url.split(base_url)[-1]
-
     if force_live:
         with requests_cache.disabled():
             # NOTE - when force_live == True - the anchor-tag absolute URL fix is not applied!

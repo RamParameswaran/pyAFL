@@ -50,7 +50,7 @@ class Player(object):
     def _get_player_url(self):
         last_initial = self.name.split(" ")[1][0]
         player_list_url = (
-            config.AFLTABLES_STATS_BASE_URL + f"players{last_initial}_idx.html"
+            config.AFLTABLES_STATS_BASE_URL + f"stats/players{last_initial}_idx.html"
         )
 
         resp = requests.get(player_list_url)
