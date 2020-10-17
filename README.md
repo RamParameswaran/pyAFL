@@ -26,6 +26,7 @@ pyAFL is a AFL (Australian Football League) data fetching libary. It scrapes dat
   - [Team()](#Team)
   - [Team.players](#Team.players)
   - [Team.games](#Team.games)
+  - [Team.season_stats(year)](#Team.season_stats)
 
 ### Player()
 
@@ -118,7 +119,24 @@ Returns a Pandas DataFrame with all historical game results for this team. The D
     >>> # Let's see what columns are contained in the DataFrame
     >>> ADE.games.columns
         Index(['Rnd', 'T', 'Opponent', 'Scoring', 'For', 'Scoring', 'Against', 'Result', 'Margin', 'W-D-L', 'Venue', 'Crowd', 'Date'], dtype='object')
-        
+
+### Team.season_stats(year: int)
+
+Retrieves the season stats for the specified year, including the individual player stats for all Players who played a game during the year. This function returns a Pandas DataFrame.
+
+    >>> from pyAFL.teams import ADE
+    >>> # Who player for Adelaide in 2009, and how did they perform? (See https://afltables.com/afl/stats/2009.html)
+    >>> ADE.season_stats(2009)
+                          #              Player               GM  ...     GA    %P  SU
+        0                10        Boak, Travis               21  ...   14.0  79.8 NaN
+        1                11       Rockliff, Tom               18  ...    8.0  77.3 NaN
+        2                33  Byrne-Jones, Darcy               22  ...    7.0  84.0 NaN
+        3                43        Houston, Dan               21  ...    3.0  82.1 NaN
+        ...                                 ...                   ...              ...
+        34               12     McKenzie, Trent                1  ...    NaN  94.0 NaN
+        35               30          Atley, Joe                1  ...    NaN  68.0 NaN
+        36               31      Johnson, Aidyn                1  ...    1.0  77.0 NaN
+        [38 rows x 28 columns]
         
 ## Testing
 
