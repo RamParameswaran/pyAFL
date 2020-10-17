@@ -44,8 +44,8 @@ This function returns a PlayerStats object with attributes:
 **Example**
 
     >>> from pyAFL.players.models import Player
+    
     >>> player = Player("Nick Riewoldt")
-
     >>> player.url
     "https://afltables.com/afl/stats/players/N/Nick_Riewoldt.html"
 
@@ -77,6 +77,7 @@ Instantiates a Team object. pyAFL automatically instantiates Team objects for al
     
     >>> ADE
         <Team: Adelaide>
+        
     >>> CURRENT_TEAMS
         [<Team: Adelaide>, <Team: Brisbane Lions>, <Team: Carlton>, <Team: Collingwood>, <Team: Essendon>, <Team: Fremantle>, <Team: Geelong>, <Team: Gold Coast>, <Team: Greater Western Sydney>, <Team: Hawthorn>, <Team: Melbourne>, <Team: North Melbourne>, <Team: Port Adelaide>, <Team: Richmond>, ...]
 
@@ -85,6 +86,7 @@ Instantiates a Team object. pyAFL automatically instantiates Team objects for al
 Returns a list of all historical players for this team. The return is a list of pyAFL [Player](#Player) objects. These Player objects can be queried to get player stats using the Player classmethods noted above.
 
     >>> from pyAFL.teams import ADE
+    
     >>> # Let's get a list of all players who have every played for Adelaide (i.e. all players from https://afltables.com/afl/stats/teams/adelaide.html)
     >>> ADE.players
         [<Player: Mcleod, Andrew>, <Player: Edwards, Tyson>, <Player: Ricciuto, Mark>, <Player: Hart, Ben>, <Player: Smart, Nigel>, <Player: Goodwin, Simon>, <Player: Bickley, Mark>, <Player: Thompson, Scott>, ...]
@@ -94,6 +96,7 @@ Returns a list of all historical players for this team. The return is a list of 
 Returns a Pandas DataFrame with all historical game results for this team. The DataFrame has a datetime index.
 
     >>> from pyAFL.teams import ADE
+    
     >>> # Let's get all historical game data (i.e. all the data from https://afltables.com/afl/teams/adelaide/allgames.html)
     >>> ADE.games
                              Rnd  T  ...    Crowd                      Date
@@ -125,6 +128,7 @@ Returns a Pandas DataFrame with all historical game results for this team. The D
 Retrieves the season stats for the specified year, including the individual player stats for all Players who played a game during the year. This function returns a Pandas DataFrame.
 
     >>> from pyAFL.teams import ADE
+    
     >>> # Who player for Adelaide in 2019, and how did they perform? (See https://afltables.com/afl/stats/2019.html)
     >>> ADE.season_stats(2019)
                           #              Player               GM  ...     GA    %P  SU
