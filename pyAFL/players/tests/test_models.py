@@ -24,6 +24,10 @@ class TestPlayerModel:
             Player("Tony Lockett")._get_player_url()
             == "https://afltables.com/afl/stats/players/T/Tony_Lockett.html"
         )
+        assert (
+            Player("Duncan MacGregor")._get_player_url()
+            == "https://afltables.com/afl/stats/players/D/Duncan_MacGregor.html"
+        )
 
     def test_player_classmethod_get_player_url_failure(self):
         with pytest.raises(LookupError) as e:
