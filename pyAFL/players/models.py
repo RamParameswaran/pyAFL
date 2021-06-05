@@ -65,7 +65,9 @@ class Player(object):
 
         url_list = soup.findAll(
             "a",
-            href=re.compile(f"players/{self.name[0]}/{self.name.replace(' ', '_')}"),
+            href=re.compile(
+                f"players/{self.name[0]}/{self.name.replace(' ', '_')}", re.I
+            ),
         )
 
         # If no matches found, raise LookupError
