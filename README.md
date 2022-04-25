@@ -130,21 +130,20 @@ Returns a Pandas DataFrame with all historical game results for this team. The D
 
 Retrieves the season stats for the specified year, including the individual player stats for all Players who played a game during the year. This function returns a Pandas DataFrame.
 
-    >>> from pyAFL.seasons.models import Season
+    >>> from pyAFL.teams import ADE
 
-    >>> # Instantiate Season object for 2021 (See https://afltables.com/afl/seas/2021.html)
-    >>> season_2021 = Season(2021)
-    >>> stats_2021 = season_2021.get_season_stats()
-    >>> stats_2021.match_summary
-
-                       Date  Round  Game number          Venue       Home team  ...         Home team score detail         Away team score detail      Winning team Margin         Year stage
-
-0 2021-03-18 18:25:00 1 1 M.C.G. Richmond ... [3, 3, 8, 5, 10, 8, 15, 15] [3, 2, 6, 6, 8, 12, 11, 14] Richmond 25 Regular season
-1 2021-03-19 18:50:00 1 2 M.C.G. Collingwood ... [1, 2, 4, 6, 5, 7, 7, 11] [3, 2, 6, 5, 9, 7, 10, 9] Western Bulldogs 16 Regular season
-2 2021-03-20 12:45:00 1 3 M.C.G. Melbourne ... [4, 4, 7, 6, 9, 8, 11, 14] [0, 4, 3, 8, 6, 9, 8, 10] Melbourne 22 Regular season
-3 2021-03-20 15:35:00 1 4 Adelaide Oval Adelaide ... [4, 4, 11, 7, 13, 9, 15, 13] [2, 3, 5, 5, 10, 8, 13, 13] Adelaide 12 Regular season
-4 2021-03-20 18:25:00 1 5 Docklands Essendon ... [2, 4, 10, 6, 11, 10, 13, 13] [3, 1, 4, 3, 12, 3, 14, 8] Hawthorn 1 Regular season
-.. ... ... ... ... ... ... ... ... ... ... ...
+    >>> # Who player for Adelaide in 2019, and how did they perform? (See https://afltables.com/afl/stats/2019.html)
+    >>> ADE.season_stats(2019)
+                          #              Player               GM  ...     GA    %P  SU
+        0                10        Boak, Travis               21  ...   14.0  79.8 NaN
+        1                11       Rockliff, Tom               18  ...    8.0  77.3 NaN
+        2                33  Byrne-Jones, Darcy               22  ...    7.0  84.0 NaN
+        3                43        Houston, Dan               21  ...    3.0  82.1 NaN
+        ...                                 ...                   ...              ...
+        34               12     McKenzie, Trent                1  ...    NaN  94.0 NaN
+        35               30          Atley, Joe                1  ...    NaN  68.0 NaN
+        36               31      Johnson, Aidyn                1  ...    1.0  77.0 NaN
+        [38 rows x 28 columns]
 
 ### Season()
 
@@ -160,6 +159,23 @@ This function returns a SeasonStats object with attributes:
 - season_matches (list): Match object for each match in the season
 - match_summary (Pandas dataframe): summary of all matches in the season
 - final_ladder (Pandas dataframe): the final season ladder (empty list if season is unfinished)
+
+```
+     >>> from pyAFL.seasons.models import Season
+     
+     # Instantiate Season object for 2021 (See https://afltables.com/afl/seas/2021.html)
+     >>> season_2021 = Season(2021)
+     >>> stats_2021 = season_2021.get_season_stats()
+     >>> stats_2021.match_summary
+     
+     Date                Round  Game number   Venue    Home team  ...      Home team score detail         Away team score detail        Winning team     Margin     Year stage
+     2021-03-18 18:25:00   1         1        M.C.G.   Richmond   ...     [3, 3, 8, 5, 10, 8, 15, 15]     [3, 2, 6, 6, 8, 12, 11, 14]     Richmond     25     Regular season
+     2021-03-19 18:50:00   1         2        M.C.G.  Collingwood ...      [1, 2, 4, 6, 5, 7, 7, 11]       [3, 2, 6, 5, 9, 7, 10, 9]   Western Bulldogs     16     Regular season
+     2021-03-20 12:45:00   1         3        M.C.G.   Melbourne ...       [4, 4, 7, 6, 9, 8, 11, 14]      [0, 4, 3, 8, 6, 9, 8, 10]    Melbourne     22     Regular season
+     2021-03-20 15:35:00   1         4    Adelaide Oval Adelaide ...      [4, 4, 11, 7, 13, 9, 15, 13]     [2, 3, 5, 5, 10, 8, 13, 13]   Adelaide     12     Regular season
+     2021-03-20 18:25:00   1         5      Docklands  Essendon  ...      [2, 4, 10, 6, 11, 10, 13, 13]    [3, 1, 4, 3, 12, 3, 14, 8]    Hawthorn     1     Regular season
+    ...
+```
 
 ## Testing
 
