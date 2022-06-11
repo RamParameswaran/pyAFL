@@ -121,10 +121,9 @@ class PlayerStats(object):
 
     Attributes
     ----------
-    name : str
-        first name of the person
-    stats : object
-        PlayerStats object
+    season_stats_total : object
+    season_stats_average : object
+    season_results : object
 
     Methods
     -------
