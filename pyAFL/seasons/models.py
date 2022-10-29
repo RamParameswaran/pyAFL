@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 import numpy as np
 import pandas as pd
 import re
@@ -25,7 +26,7 @@ class Season(object):
         Returns season stats objects, matches, matches_summary, ladders for each round, and a final ladder
     """
 
-    def __init__(self, year: int, url: str = None):
+    def __init__(self, year: int, url: Optional[str] = None):
         """
         Constructs all the necessary attributes for the Season object.
          - If no season can be found for the given year, a
@@ -50,15 +51,20 @@ class Season(object):
         return f"<season: {self.season}>"
 
     def __str__(self):
-        return self.season
+        return str(self.season)
 
     def _get_season_url(self):
         return config.AFLTABLES_STATS_BASE_URL + f"seas/{self.season}.html"
 
-    def get_season_stats(self):
+    def get_season_stats(self, force_live=False):
         """
         Returns season stats as per the season stats page
         defined in `self._get_season_url()`
+
+        Parameters
+        ----------
+            force_live : bool
+                If True, does not use cached request
 
         Returns
         ----------
@@ -67,7 +73,7 @@ class Season(object):
 
         """
 
-        resp = requests.get(self.url)
+        resp = requests.get(self.url, force_live)
         self._stat_html = resp.text
 
         try:
@@ -79,6 +85,7 @@ class Season(object):
 
         matches = []
         ladders = []
+        final_ladder = []
         finals_stage = "Regular season"
         for df in all_dfs:
             # work out what data is in the table represented by this dataframe
@@ -129,9 +136,9 @@ class Season(object):
             "Year stage": "finals_stage",
         }
         match_summary = {}
-        for key in dataframe_fields.keys():
-            match_summary[key] = [
-                getattr(match, dataframe_fields[key]) for match in matches
+        for df_column_name, match_attribute_name in dataframe_fields.items():
+            match_summary[df_column_name] = [
+                getattr(match, match_attribute_name) for match in matches
             ]
         match_summary = pd.DataFrame(match_summary)
 
@@ -224,9 +231,9 @@ class Match:
         #             0                            1    2                                                                     3
         # 0  West Coast  0.0 Â Â 2.0 Â Â 4.3 Â Â 9.4   58  Fri 15-Apr-2022 5:40 PM (7:40 PM)  Att:  42,888 Venue: Perth Stadium
         # 1      Sydney        5.4 10.10 11.12 18.13  121          Sydney  won by  63 pts  [  Match stats  ]
-        # 
+        #
         # There are variations in the format...
-        
+
         self.round = round
         self.game_number = game_number
         self.finals_stage = finals_stage
@@ -267,11 +274,11 @@ class Match:
     def _score_detail(self, score):
         # Score is a string like '0.0 Â Â 2.0 Â Â 4.3 Â Â 9.4' and there are weird characters
         # Get the relevant ones with a regex, then split on decimals to split goals/behinds
-        strings = [x.split(".") for x in re.findall("\d*\.?\d+", score)]
+        strings = [x.split(".") for x in re.findall("\\d*\\.?\\d+", score)]
         return [int(y) for x in strings for y in x]
 
     def __repr__(self):
-        output = f"<match: {self.home_team} vs {self.away_team}>"
+        output = f"MATCH:\n\t{self.home_team} vs {self.away_team}"
         if self.finals_stage != "Regular season":
             output += f" ({self.finals_stage})"
         output += f"\n\tRound: {self.round} game {self.game_number}"
@@ -280,5 +287,5 @@ class Match:
         output += f"\n\tHome team score: {self.home_team_score_detail}: {self.home_team_score}"
         output += f"\n\tAway team score: {self.away_team_score_detail}: {self.away_team_score}"
         output += f"\n\tResult: {self.result}"
-        output += f"\n\t{self.winning_team} {self.margin}"
+        output += f"\n\t({self.winning_team} {self.margin})\n"
         return output
