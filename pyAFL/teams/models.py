@@ -1,9 +1,9 @@
-from bs4 import BeautifulSoup
 import pandas as pd
+from bs4 import BeautifulSoup
 
 from pyAFL.base.exceptions import LookupError
 from pyAFL.players.models import Player
-from pyAFL.requests import requests
+from pyAFL.session import session
 
 
 class Team(object):
@@ -38,8 +38,10 @@ class Team(object):
         """
 
         self.name = name.title()  # Convert to title case for URL string matching
-        self.all_time_players_url = f"https://afltables.com/afl/stats/teams/{url_identifier}.html"  # URL for all-time-players stats
-        self.all_time_games_url = f"https://afltables.com/afl/teams/{url_identifier}/allgames.html"  # URL to all-time-games stats
+        # URL for all-time-players stats
+        self.all_time_players_url = f"https://afltables.com/afl/stats/teams/{url_identifier}.html"
+        # URL to all-time-games stats
+        self.all_time_games_url = f"https://afltables.com/afl/teams/{url_identifier}/allgames.html"
 
     def __repr__(self):
         return f"<Team: {self.name}>"
@@ -65,7 +67,7 @@ class Team(object):
                 list of pyAFL.Player objects
 
         """
-        resp = requests.get(self.all_time_players_url)
+        resp = session.get(self.all_time_players_url)
         soup = BeautifulSoup(resp.text, "html.parser")
 
         player_table = soup.find("table")
@@ -96,7 +98,7 @@ class Team(object):
 
         """
         season_player_stats_url = f"https://afltables.com/afl/stats/{year}.html"
-        resp = requests.get(season_player_stats_url)
+        resp = session.get(season_player_stats_url)
 
         if resp.status_code == 404:
             raise Exception(f"Could not find season stats for year: {year}")
@@ -133,7 +135,7 @@ class Team(object):
                 dataframe listing all games played by the team. Contains results and match metadata.
 
         """
-        resp = requests.get(self.all_time_games_url)
+        resp = session.get(self.all_time_games_url)
         soup = BeautifulSoup(resp.text, "html.parser")
 
         seasons = soup.findAll("table")

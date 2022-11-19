@@ -1,9 +1,7 @@
 import pytest
-from unittest import mock
 
 from pyAFL.base.exceptions import LookupError
 from pyAFL.players.models import Player, PlayerStats
-from pyAFL.requests import requests
 
 
 class TestPlayerModel:
@@ -13,20 +11,20 @@ class TestPlayerModel:
 
     def test_player_classmethod_get_player_url_success(self):
         assert (
-            Player("Nathan Brown")._get_player_url()
-            == "https://afltables.com/afl/stats/players/N/Nathan_Brown0.html"
+            Player("Nathan Brown")._get_player_url() ==
+            "https://afltables.com/afl/stats/players/N/Nathan_Brown0.html"
         )
         assert (
-            Player("Nick Riewoldt")._get_player_url()
-            == "https://afltables.com/afl/stats/players/N/Nick_Riewoldt.html"
+            Player("Nick Riewoldt")._get_player_url() ==
+            "https://afltables.com/afl/stats/players/N/Nick_Riewoldt.html"
         )
         assert (
-            Player("Tony Lockett")._get_player_url()
-            == "https://afltables.com/afl/stats/players/T/Tony_Lockett.html"
+            Player("Tony Lockett")._get_player_url() ==
+            "https://afltables.com/afl/stats/players/T/Tony_Lockett.html"
         )
         assert (
-            Player("Duncan MacGregor")._get_player_url()
-            == "https://afltables.com/afl/stats/players/D/Duncan_MacGregor.html"
+            Player("Duncan MacGregor")._get_player_url() ==
+            "https://afltables.com/afl/stats/players/D/Duncan_MacGregor.html"
         )
 
     def test_player_classmethod_get_player_url_failure(self):

@@ -1,12 +1,9 @@
 import pandas as pd
 import pytest
-from unittest import mock
 
-from pyAFL.base.exceptions import LookupError
 from pyAFL.players.models import Player
 from pyAFL.teams import ALL_TEAMS, CURRENT_TEAMS
 from pyAFL.teams.models import Team
-from pyAFL.requests import requests
 
 
 class TestTeamModel:

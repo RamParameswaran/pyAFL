@@ -1,10 +1,9 @@
 from datetime import datetime
+
 import pytest
-from unittest import mock
 
 from pyAFL.base.exceptions import LookupError
 from pyAFL.seasons.models import Season, SeasonStats
-from pyAFL.requests import requests
 
 
 class TestSeasonModel:
