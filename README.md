@@ -10,19 +10,17 @@
 
 pyAFL is a AFL (Australian Football League) data fetching libary. It scrapes data from https://afltables.com/ and converts results to structured Python objects for easier analytics.
 
+
 ## Installation
 
 1. Install from pyPI
-   ```
-   pip install pyAFL
-   ```
+   `pip install pyAFL`
 
-OR 
+**OR**
 
 2. Clone the repository locally:
-   ```
-   git clone https://github.com/RamParameswaran/pyAFL.git
-   ```
+   `git clone https://github.com/RamParameswaran/pyAFL.git`
+
 
 ## API
 
