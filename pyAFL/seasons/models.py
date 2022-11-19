@@ -1,13 +1,13 @@
+import re
 from datetime import datetime
 from typing import Optional
+
 import numpy as np
 import pandas as pd
-import re
 
 from pyAFL import config
 from pyAFL.base.exceptions import LookupError
-
-from pyAFL.requests import requests
+from pyAFL.session import session
 
 
 class Season(object):
@@ -73,7 +73,7 @@ class Season(object):
 
         """
 
-        resp = requests.get(self.url, force_live)
+        resp = session.get(self.url, force_live)
         self._stat_html = resp.text
 
         try:

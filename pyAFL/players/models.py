@@ -1,12 +1,11 @@
-from bs4 import BeautifulSoup
-import pandas as pd
 import re
+
+import pandas as pd
+from bs4 import BeautifulSoup
 
 from pyAFL import config
 from pyAFL.base.exceptions import LookupError
-
-# from pyAFL.base.models import AFLObject
-from pyAFL.requests import requests
+from pyAFL.session import session
 
 
 class Player(object):
@@ -60,7 +59,7 @@ class Player(object):
             config.AFLTABLES_STATS_BASE_URL + f"stats/players{last_initial}_idx.html"
         )
 
-        resp = requests.get(player_list_url)
+        resp = session.get(player_list_url)
         soup = BeautifulSoup(resp.text, "html.parser")
 
         url_list = soup.findAll(
@@ -95,7 +94,7 @@ class Player(object):
 
         """
 
-        resp = requests.get(self.url)
+        resp = session.get(self.url)
         self._stat_html = resp.text
 
         soup = BeautifulSoup(self._stat_html, "html.parser")
