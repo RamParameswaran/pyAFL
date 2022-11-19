@@ -1,5 +1,5 @@
 ![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)
-![Python](https://img.shields.io/pypi/pyversions/django)
+![Python](https://camo.githubusercontent.com/17e373ff35ef1127c76af3cc52bce854c6ccc5d7815835683002fe1d59c0f89f/68747470733a2f2f696d672e736869656c64732e696f2f707970692f707976657273696f6e732f72657175657374732d6361636865)
 ![Build and Test](https://github.com/RamParameswaran/pyAFL/workflows/Build%20and%20Test/badge.svg)
 
 <p align="center">
@@ -12,7 +12,14 @@ pyAFL is a AFL (Australian Football League) data fetching libary. It scrapes dat
 
 ## Installation
 
-1. Clone the repository locally:
+1. Install from pyPI
+   ```
+   pip install pyAFL
+   ```
+
+OR 
+
+2. Clone the repository locally:
    ```
    git clone https://github.com/RamParameswaran/pyAFL.git
    ```
