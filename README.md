@@ -1,5 +1,6 @@
 ![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)
-![Python](https://camo.githubusercontent.com/17e373ff35ef1127c76af3cc52bce854c6ccc5d7815835683002fe1d59c0f89f/68747470733a2f2f696d672e736869656c64732e696f2f707970692f707976657273696f6e732f72657175657374732d6361636865)
+[![PyPI Latest Release](https://img.shields.io/pypi/v/pyAFL.svg)](https://pypi.org/project/pyAFL/)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pandas)
 ![Build and Test](https://github.com/RamParameswaran/pyAFL/workflows/Build%20and%20Test/badge.svg)
 
 <p align="center">
