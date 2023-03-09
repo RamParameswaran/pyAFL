@@ -108,8 +108,12 @@ class Team(object):
 
         for table in team_tables:
             if table.find("th"):
-                if self.name in table.find("th").text:
-                    df = pd.read_html(str(table))
+                if self.name != "Adelaide":
+                    if self.name in table.find("th").text:
+                        df = pd.read_html(str(table))
+                else:
+                    if "Adelaide" in table.find("th").text and "Port" not in table.find("th").text:
+                        df = pd.read_html(str(table))
 
         if df is None:
             raise LookupError(
