@@ -1,5 +1,6 @@
 import pandas as pd
 from bs4 import BeautifulSoup
+import re
 
 from pyAFL.base.exceptions import LookupError
 from pyAFL.players.models import Player
@@ -108,8 +109,10 @@ class Team(object):
 
         for table in team_tables:
             if table.find("th"):
-                if self.name in table.find("th").text:
+                stripped_string = table.find("th").text.replace("/n", "").strip()
+                if stripped_string.startswith(self.name):
                     df = pd.read_html(str(table))
+                    break
 
         if df is None:
             raise LookupError(

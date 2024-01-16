@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 
+import pyAFL.teams
 from pyAFL.players.models import Player
 from pyAFL.teams import ALL_TEAMS, CURRENT_TEAMS
 from pyAFL.teams.models import Team
@@ -37,6 +38,16 @@ class TestTeamModel:
 
         assert isinstance(season_stats, pd.DataFrame)
         assert "Player" in season_stats.columns
+
+    def test_team_method_season_stats_adelaide_and_portadelaide_naming_conflict(self):
+        adelaide_crows = pyAFL.teams.ADE
+        port_adelaide = pyAFL.teams.POR
+
+        adelaide_season_stats = adelaide_crows.season_stats(2019)
+        port_adelaide_season_stats = port_adelaide.season_stats(2019)
+
+        assert port_adelaide_season_stats.Player[0] == "Boak, Travis"  # We expect to find Travis Boak in Port Adelaide
+        assert adelaide_season_stats.Player[0] == "Crouch, Brad"  # We expect to find Brad Crouch in Adelaide Crows
 
     def test_team_property_games(self):
         test_team = ALL_TEAMS[0]
