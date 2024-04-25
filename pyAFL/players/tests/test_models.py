@@ -36,4 +36,11 @@ class TestPlayerModel:
     def test_player_classmethod_get_player_stats(self):
         player = Player("Nick Riewoldt")
 
+        player1 = Player("Stuart Magee")
+        player1.get_player_stats()
+        assert(player1.metadata["born"] == "13-Oct-1943")
+        assert(player1.metadata["debut"] == "14-May-1962") # afltables: first game was May 19
+        assert(player1.metadata["last"] == "22-Aug-1975") # afltables: last game was August 23
+
+
         assert isinstance(player.get_player_stats(), PlayerStats)

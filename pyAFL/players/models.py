@@ -1,6 +1,7 @@
 import re
 
 import pandas as pd
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
 from pyAFL import config
@@ -16,11 +17,12 @@ class Player(object):
     ----------
     name : str
         first name of the person
-    stats : object
-        PlayerStats object
+    metadata : dictionary
+        player bio information 
 
     Methods
     -------
+    get_player_stats : returns PlayerStats object
     ...
     """
 
@@ -42,6 +44,7 @@ class Player(object):
 
         self.name = name.title()  # Convert to title case for URL string matching
         self.name = self.name.replace("\n", "").strip()
+        self.metadata = {}
         if url:
             self.url = url
         else:
@@ -98,6 +101,27 @@ class Player(object):
         self._stat_html = resp.text
 
         soup = BeautifulSoup(self._stat_html, "html.parser")
+
+        # Read in player bio
+        for bio in soup.find_all('b'):
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Born:":
+                date_born = re.sub(r"[\n\t\s]*", "", bio.next_sibling.replace(" (",""))
+                timestamp = datetime.strptime(date_born, '%d-%b-%Y').strftime('%d-%b-%Y')
+                self.metadata["born"] = timestamp
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Debut:":
+                debut = bio.next_sibling.strip().split(" ") # Ex:18y 218d
+                timestamp = (datetime.strptime(self.metadata["born"], '%d-%b-%Y') + timedelta(int(debut[0][:-1]) * 365 + int(debut[1][:-1]))).strftime('%d-%b-%Y')
+                print("debut:", timestamp)
+                self.metadata["debut"] = timestamp
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Last:":
+                last = bio.next_sibling.replace(")","").strip().split(" ")
+                timestamp = (datetime.strptime(self.metadata["born"], '%d-%b-%Y') + timedelta(int(last[0][:-1]) * 365 + int(last[1][:-1]))).strftime('%d-%b-%Y')
+                print("last:", timestamp)
+                self.metadata["last"] = timestamp
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Height:":
+                self.metadata["height"] = re.sub("[^0-9]", "",bio.next_sibling)
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Weight:":
+                self.metadata["weight"] = re.sub("[^0-9]", "",bio.next_sibling)
 
         all_dfs = pd.read_html(self._stat_html)
         season_dfs = pd.read_html(self._stat_html, match=r"[A-Za-z]* - [0-9]{4}")
