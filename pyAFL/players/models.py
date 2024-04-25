@@ -17,6 +17,8 @@ class Player(object):
     ----------
     name : str
         first name of the person
+    url : str
+        url to the player's information page
     metadata : dictionary
         player bio information 
 
@@ -85,25 +87,9 @@ class Player(object):
             )
 
         return url_list[0].attrs.get("href")
-
-    def get_player_stats(self):
-        """
-        Returns player stats as per the player stats page defined in `self._get_player_url()`
-
-        Returns
-        ----------
-            stats : obj
-                player stats Python object
-
-        """
-
-        resp = session.get(self.url)
-        self._stat_html = resp.text
-
-        soup = BeautifulSoup(self._stat_html, "html.parser")
-
-        # Read in player bio
-        for bio in soup.find_all('b'):
+    
+    def _get_bio_info(self, b_tags):
+        for bio in b_tags:
             if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Born:":
                 date_born = re.sub(r"[\n\t\s]*", "", bio.next_sibling.replace(" (",""))
                 timestamp = datetime.strptime(date_born, '%d-%b-%Y').strftime('%d-%b-%Y')
@@ -122,6 +108,24 @@ class Player(object):
                 self.metadata["height"] = re.sub("[^0-9]", "",bio.next_sibling)
             if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Weight:":
                 self.metadata["weight"] = re.sub("[^0-9]", "",bio.next_sibling)
+
+    def get_player_stats(self):
+        """
+        Returns player stats as per the player stats page defined in `self._get_player_url()`
+
+        Returns
+        ----------
+            stats : obj
+                player stats Python object
+
+        """
+
+        resp = session.get(self.url)
+        self._stat_html = resp.text
+
+        soup = BeautifulSoup(self._stat_html, "html.parser")
+
+        self._get_bio_info(soup.find_all('b'))
 
         all_dfs = pd.read_html(self._stat_html)
         season_dfs = pd.read_html(self._stat_html, match=r"[A-Za-z]* - [0-9]{4}")
