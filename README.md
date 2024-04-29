@@ -43,7 +43,7 @@ Instantiates the Player object. The **init** method finds the matching player on
 
 ### Player.get_player_stats()
 
-Pulls player stats (career totals, and season-by-season summary) and presents as a Python object.
+Pulls player bio (height, weight, dob, debut, and last) to store in Player attribute 'metadata', and player stats (career totals, and season-by-season summary) which is presented as a Python object.
 This function returns a PlayerStats object with attributes:
 
 - season_stats_total (Pandas dataframe)

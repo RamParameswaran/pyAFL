@@ -1,6 +1,7 @@
 import re
 
 import pandas as pd
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
 from pyAFL import config
@@ -16,11 +17,14 @@ class Player(object):
     ----------
     name : str
         first name of the person
-    stats : object
-        PlayerStats object
+    url : str
+        url to the player's information page
+    metadata : dictionary
+        player bio information 
 
     Methods
     -------
+    get_player_stats : returns PlayerStats object
     ...
     """
 
@@ -42,6 +46,7 @@ class Player(object):
 
         self.name = name.title()  # Convert to title case for URL string matching
         self.name = self.name.replace("\n", "").strip()
+        self.metadata = {}
         if url:
             self.url = url
         else:
@@ -82,6 +87,44 @@ class Player(object):
             )
 
         return url_list[0].attrs.get("href")
+    
+    def _get_bio_info(self, b_tags):
+        for bio in b_tags:
+
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Born:":
+                date_born = re.sub(r"[\n\t\s]*", "", bio.next_sibling.replace(" (",""))
+                if not date_born: self.metadata["born"] = None; continue
+
+                timestamp = datetime.strptime(date_born, '%d-%b-%Y').strftime('%d-%b-%Y')
+                self.metadata["born"] = timestamp
+
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Debut:":
+                debut = bio.next_sibling.strip() # Ex:18y 218d
+                if not debut or self.metadata["born"] == None: self.metadata["debut"] = None; continue
+
+                debut = debut.split(" ")
+                timestamp = (datetime.strptime(self.metadata["born"], '%d-%b-%Y') + timedelta(int(debut[0][:-1]) * 365 + int(debut[1][:-1]))).strftime('%d-%b-%Y')
+                self.metadata["debut"] = timestamp
+
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Last:":
+                last = bio.next_sibling.replace(")","").strip()
+                if not last or self.metadata["born"] == None: self.metadata["last"] = None; continue
+
+                last = last.split(" ")
+                timestamp = (datetime.strptime(self.metadata["born"], '%d-%b-%Y') + timedelta(int(last[0][:-1]) * 365 + int(last[1][:-1]))).strftime('%d-%b-%Y')
+                self.metadata["last"] = timestamp
+
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Height:":
+                height = re.sub("[^0-9]", "",bio.next_sibling)
+                if not height: self.metadata["height"] = None; continue
+
+                self.metadata["height"] = height
+
+            if re.sub(r"[\n\t\s]*", "", bio.get_text())=="Weight:":
+                weight = re.sub("[^0-9]", "",bio.next_sibling)
+                if not weight: self.metadata["weight"] = None; continue
+
+                self.metadata["weight"] = weight
 
     def get_player_stats(self):
         """
@@ -98,6 +141,8 @@ class Player(object):
         self._stat_html = resp.text
 
         soup = BeautifulSoup(self._stat_html, "html.parser")
+
+        self._get_bio_info(soup.find_all('b'))
 
         all_dfs = pd.read_html(self._stat_html)
         season_dfs = pd.read_html(self._stat_html, match=r"[A-Za-z]* - [0-9]{4}")
