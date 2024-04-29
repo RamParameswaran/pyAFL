@@ -1,5 +1,6 @@
 import pytest
 
+from bs4 import BeautifulSoup
 from pyAFL.base.exceptions import LookupError
 from pyAFL.players.models import Player, PlayerStats
 
@@ -36,11 +37,48 @@ class TestPlayerModel:
     def test_player_classmethod_get_player_stats(self):
         player = Player("Nick Riewoldt")
 
-        player1 = Player("Stuart Magee")
-        player1.get_player_stats()
-        assert(player1.metadata["born"] == "13-Oct-1943")
-        assert(player1.metadata["debut"] == "14-May-1962") # afltables: first game was May 19
-        assert(player1.metadata["last"] == "22-Aug-1975") # afltables: last game was August 23
-
-
         assert isinstance(player.get_player_stats(), PlayerStats)
+
+        player = Player("Stuart Magee")
+        player.get_player_stats()
+
+        assert(player.metadata["born"] == "13-Oct-1943")
+        assert(player.metadata["debut"] == "14-May-1962")
+        assert(player.metadata["last"] == "22-Aug-1975")
+
+    def test_unvavailable_player_bio(self):
+        # Mock an empty, or None value
+        # Case: date of birth is unavailable but debut or last is/are,
+        #       player.metadata['debut' and 'last'] = None
+        player = Player("Nathan Brown")
+
+        html_content = """
+            <html>
+            <body>
+                <center>
+                    <b>Born:</b>
+                     (
+                    <b>Debut:</b>
+                    18y 218d
+                    <b>Last:</b>
+                    )
+                    <b>Height:</b>
+
+                    <b>Weight:</b>
+                    74 kg
+                </center>
+            </body>
+            </html>
+        """
+
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        player._get_bio_info(soup.find_all('b'))
+        
+        print("player.metadata:", player.metadata)
+
+        assert(player.metadata["born"] == None)
+        assert(player.metadata["debut"] == None)
+        assert(player.metadata["height"] == None)
+        assert(player.metadata["weight"] == "74")
+        assert(player.metadata["last"] == None)

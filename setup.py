@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="pyAFL",
-    version="0.4.2",
+    version="0.4.3",
     description="Python data fetching library for the Australian Football League",
     long_description="pyAFL is a AFL (Australian Football League) data fetching libary. It scrapes data from https://afltables.com/ and converts results to structured Python objects for easier analytics.",
     url="https://github.com/RamParameswaran/pyAFL",
